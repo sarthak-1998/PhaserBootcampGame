@@ -1,0 +1,98 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <script src="phaser.js"></script>
+
+    <style>
+        body{
+    margin:0 px;
+    }
+    </style>
+</head>
+<body>
+
+    <script> 
+     var game= new Phaser.Game(window.innerWidth,window.innerHeight,Phaser.AUTO , 'first-game', {preload :preload , create: create , update : update , render :render} )
+     var player
+     var space
+     var coin
+     var score=0
+    function preload (){
+
+        game.load.image('jet','jet.png')
+        game.load.image('space', 'starfield.png' )
+        game.load.image('coin', 'coin.png' )
+    }
+
+    function create (){
+
+        game.physics.startSystem(Phaser.Physics.ARCADE)
+        console.log(game)
+        space = game.add.tileSprite(0,0,window.innerWidth,window.innerHeight,'space')
+
+        coins=game.add.group()
+        for (let i=0;i<20;i++){
+
+            coin = coins.create(game.rnd.between(0,window.innerWidth),game.rnd.between(0,window.innerHeight),'coin')
+            coin.anchor.set(0.5,0.5);
+            game.physics.arcade.enable(coin)
+        }
+
+
+
+        player = game.add.sprite (200,200,'jet')
+        player.anchor.set(0.5,0.5)
+        game.physics.arcade.enable(player)
+        //game.add.sprite(200,200,'jet')
+
+        console.log(space);
+
+        
+    }
+
+    function update (){  
+        //player.x= game.input.x;
+       // player.y= game.input.y;
+
+        game.physics.arcade.collide(player,coins,handler,processor,this);
+
+
+        player.body.velocity.x = 10 * (game.input.x - player.x)
+        player.body.velocity.y = 10 * (game.input.y - player.y)
+
+        space.tilePosition.y += 20
+        degree= Math.atan((game.input.y - player.y)/(game.input.x - player.x))* 180/Math.PI+90 
+        player.angle = degree;
+
+    }
+
+    function render (){
+        game.debug.text("score :" +score,100,100)
+
+    }
+
+    function handler(p, c){
+
+        return true;
+    }
+
+    function processor(p, c){
+        console.log("boom");
+        score++;
+
+        c.x=game.rnd.between(0,window.innerWidth);
+        c.y=game.rnd.between(0,window.innerHeight);
+
+
+    }
+
+    </script>
+
+</body>
+</html>
